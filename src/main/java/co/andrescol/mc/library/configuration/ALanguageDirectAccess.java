@@ -26,19 +26,33 @@ import co.andrescol.mc.library.utils.AUtils;
 public class ALanguageDirectAccess {
 
 	private static final String LANG_FILE = "lang.properties";
-	private APlugin plugin;
-	
+
+	/**
+	 * Language key for no permission message
+	 */
+	public static final String NOT_PERMISSION = "no_permission";
+
+	/**
+	 * Language key for the information command
+	 */
+	public static final String COMAND_INFO = "command_info";
+
+	/**
+	 * Language key for an unkown subcommand
+	 */
+	public static final String UNKOWN_SUBCOMMAND = "unkown_subcommand";
+
 	/**
 	 * Create the instance
 	 * 
 	 * @param plugin
 	 */
-	private ALanguageDirectAccess(APlugin plugin) {
+	private ALanguageDirectAccess() {
+		APlugin plugin = APlugin.getInstance();
 		File lang = new File(plugin.getDataFolder(), LANG_FILE);
 		if (!lang.exists()) {
 			plugin.saveResource(LANG_FILE, false);
 		}
-		this.plugin = plugin;
 	}
 
 	/**
@@ -48,7 +62,7 @@ public class ALanguageDirectAccess {
 	 * @param replacements arguments
 	 * @return Message
 	 */
-	public String getMessage(Enum<?> name, Object... replacements) {
+	public String getMessage(String name, Object... replacements) {
 		String message = this.getString(name);
 		if (message != null) {
 			message = AUtils.replaceValues(message, replacements);
@@ -65,32 +79,27 @@ public class ALanguageDirectAccess {
 	 * @param name name of the language field in the language file
 	 * @return property
 	 */
-	private String getString(Enum<?> name) {
+	private String getString(String name) {
 		Properties properties = new Properties();
+		APlugin plugin = APlugin.getInstance();
 		File langFile = new File(plugin.getDataFolder(), LANG_FILE);
 		try (InputStream input = new FileInputStream(langFile)) {
 			properties.load(new InputStreamReader(input, StandardCharsets.UTF_8));
-			return properties.getProperty(name.name());
+			return properties.getProperty(name);
 		} catch (IOException e) {
 			plugin.error("Can not load the languaje property: " + name, e);
 		}
 		return null;
 	}
-	
+
 	// ========================== Singleton ======================================
-	
+
 	private static ALanguageDirectAccess instance;
-	
-	public static void init(APlugin plugin) {
-		if(instance == null) {
-			instance = new ALanguageDirectAccess(plugin);
-		}
-	}
-	
+
 	public static ALanguageDirectAccess getInstance() {
-		if(instance != null) {
-			return instance;
+		if (instance == null) {
+			instance = new ALanguageDirectAccess();
 		}
-		throw new IllegalStateException("Call ALanguaje.init(APlugin) before this method.");
+		return instance;
 	}
 }

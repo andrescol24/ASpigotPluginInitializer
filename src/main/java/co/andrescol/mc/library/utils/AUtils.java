@@ -40,13 +40,12 @@ public interface AUtils {
 	 * 
 	 * @param destination the receiver
 	 * @param msg         message
-	 * @param plugin      Plugin
 	 */
-	public static void sendMessage(CommandSender destination, String msg, APlugin plugin) {
+	public static void sendMessage(CommandSender destination, String msg) {
 		if (destination instanceof Player) {
 			destination.sendMessage(msg);
 		} else {
-			plugin.info(msg);
+			APlugin.getInstance().info(msg);
 		}
 	}
 }

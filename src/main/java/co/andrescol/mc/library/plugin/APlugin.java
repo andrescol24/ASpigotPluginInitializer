@@ -5,21 +5,57 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.andrescol.mc.library.configuration.ALanguageDirectAccess;
 import co.andrescol.mc.library.utils.AUtils;
 
 /**
  * This class define and implement basic methods to initialize and configure the
- * plugin
+ * plugin. Extend this class the lang.properties file and config.yml will
+ * automatically saved.
+ * 
+ * This class allows to access a unique instance of the plugin through {@link APlugin#getInstance()} 
  * 
  * @author andrescol24
  *
  */
 public abstract class APlugin extends JavaPlugin {
 
+	// ========================== Statics ================================
+	private static APlugin instance;
+
+	/**
+	 * Set the static and the unique instance (could exists more instances)
+	 * 
+	 * @param plugin First instance created
+	 */
+	private static void setInstance(APlugin plugin) {
+		if (instance == null) {
+			instance = plugin;
+		} else {
+			instance.warn("A new instance of this plugin was created, check externals effects!");
+		}
+	}
+
+	/**
+	 * Get the plugin instance
+	 * 
+	 * @return the plugin instance
+	 */
+	public static APlugin getInstance() {
+		if (instance != null) {
+			return instance;
+		}
+		throw new IllegalStateException("Make sure that the plugin has started");
+	}
+
+	// ========================== End Statics ================================
+
+	/**
+	 * Constructor that initializes the unique instance, save the config.yml and
+	 * lang.properties. Also loads the language
+	 */
 	protected APlugin() {
+		APlugin.setInstance(this);
 		this.loadConfiguration();
-		ALanguageDirectAccess.init(this);
 	}
 
 	/**
