@@ -3,6 +3,7 @@ package co.andrescol.mc.library.plugin;
 import java.io.File;
 import java.util.logging.Level;
 
+import co.andrescol.mc.library.configuration.ALanguage;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.andrescol.mc.library.utils.AUtils;
@@ -95,7 +96,8 @@ public abstract class APlugin extends JavaPlugin {
 	 * Reload the configuration
 	 */
 	public void reload() {
-		this.reloadConfig();
+		this.onDisable();
+		this.onEnable();
 		// In the moment I am using the Language direct access
 	}
 
@@ -108,5 +110,6 @@ public abstract class APlugin extends JavaPlugin {
 		if (!config.exists()) {
 			saveDefaultConfig();
 		}
+		ALanguage.loadLanguageFile();
 	}
 }

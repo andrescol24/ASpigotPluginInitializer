@@ -4,12 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import co.andrescol.mc.library.plugin.APlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import co.andrescol.mc.library.configuration.ALanguageDirectAccess;
+import co.andrescol.mc.library.configuration.ALanguage;
 import co.andrescol.mc.library.utils.AUtils;
 
 /**
@@ -39,6 +40,11 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             // info command
             if (this.isHelpCommand(args)) {
                 AUtils.sendMessage(sender, this.getInfoMessage());
+            } else if(this.isReloadCommand(args)) {
+                if(sender.hasPermission(command.getPermission().concat(".reload"))) {
+                    APlugin.getInstance().reload();
+                    APlugin.getInstance().info("Configuration reloaded");
+                }
             } else {
                 // Sub command execution
                 ASubCommand subcommand = this.getSubCommand(args);
@@ -46,13 +52,12 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
                     return subcommand.handle(sender, command, label, args);
                 } else {
                     // Unknown subcommand
-                    String message = ALanguageDirectAccess.getInstance()
-                            .getMessage(ALanguageDirectAccess.UNKOWN_SUBCOMMAND, args[0]);
+                    String message = ALanguage.getMessage("UNKNOWN_SUBCOMMAND", args[0]);
                     AUtils.sendMessage(sender, message);
                 }
             }
         } else {
-            String message = ALanguageDirectAccess.getInstance().getMessage(ALanguageDirectAccess.NOT_PERMISSION);
+            String message = ALanguage.getMessage("NOT_PERMISSION");
             AUtils.sendMessage(sender, message);
         }
         return true;
@@ -82,6 +87,9 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             if ("help".startsWith(name)) {
                 list.add("help");
             }
+            if ("reload".startsWith(name)) {
+                list.add("reload");
+            }
         }
         return list;
     }
@@ -90,7 +98,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * This method find the subcommand to execute.
      *
      * @param args arguments
-     * @return the subcomand or null if there aren't a subcommand with that name
+     * @return the sub-command or null if there aren't a subcommand with that name
      */
     protected ASubCommand getSubCommand(String[] args) {
         if (args != null && args.length > 0) {
@@ -108,17 +116,27 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return the information message configured in the lang.properties file
      */
     protected String getInfoMessage() {
-        return ALanguageDirectAccess.getInstance().getMessage(ALanguageDirectAccess.COMAND_INFO);
+        return ALanguage.getMessage("COMMAND_INFO");
     }
 
     /**
      * Return true if the subcommand is null or is help or info
      *
-     * @param args argumentes
+     * @param args arguments
      * @return <code>true</code> if the intention is get information about de plugin
      */
     protected boolean isHelpCommand(String[] args) {
         return args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("info");
+    }
+
+    /**
+     * Return true if the subcommand is null or is help or info
+     *
+     * @param args arguments
+     * @return <code>true</code> if the intention is get information about de plugin
+     */
+    protected boolean isReloadCommand(String[] args) {
+        return args.length == 0 || args[0].equalsIgnoreCase("reload");
     }
 
     /**
