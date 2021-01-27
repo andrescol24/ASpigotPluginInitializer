@@ -96,6 +96,9 @@ public abstract class APlugin extends JavaPlugin {
 	 * Reload the configuration
 	 */
 	public void reload() {
+		this.reloadConfig();
+		ALanguage.loadLanguageFile();
+
 		this.onDisable();
 		this.onEnable();
 		// In the moment I am using the Language direct access
