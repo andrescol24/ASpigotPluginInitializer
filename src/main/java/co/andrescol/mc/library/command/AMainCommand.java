@@ -43,7 +43,8 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             } else if(this.isReloadCommand(args)) {
                 if(sender.hasPermission(command.getPermission().concat(".reload"))) {
                     APlugin.getInstance().reload();
-                    APlugin.getInstance().info("Configuration reloaded");
+                    String message = ALanguage.getMessage("CONFIGURATION_RELOAD");
+                    AUtils.sendMessage(sender, message);
                 } else {
                     String message = ALanguage.getMessage("NOT_PERMISSION");
                     AUtils.sendMessage(sender, message);
