@@ -40,8 +40,8 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             // info command
             if (this.isHelpCommand(args)) {
                 AUtils.sendMessage(sender, this.getInfoMessage());
-            } else if(this.isReloadCommand(args)) {
-                if(sender.hasPermission(command.getPermission().concat(".reload"))) {
+            } else if (this.isReloadCommand(args)) {
+                if (sender.hasPermission(command.getPermission().concat(".reload"))) {
                     APlugin.getInstance().reload();
                     String message = ALanguage.getMessage("CONFIGURATION_RELOAD");
                     AUtils.sendMessage(sender, message);
@@ -51,7 +51,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
                 }
             } else {
                 // Sub command execution
-                ASubCommand subcommand = this.getSubCommand(args);
+                ASubCommand subcommand = this.getSubCommand(args, sender);
                 if (subcommand != null) {
                     return subcommand.handle(sender, command, label, args);
                 } else {
@@ -78,20 +78,20 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      */
     protected List<String> completeTab(CommandSender sender, Command command, String label, String[] args) {
         List<String> list = new LinkedList<>();
-        ASubCommand subcommand = this.getSubCommand(args);
+        ASubCommand subcommand = this.getSubCommand(args, sender);
         if (subcommand != null) {
             return subcommand.onTabComplete(sender, command, label, args);
-        } else if(args.length <= 1) {
+        } else if (args.length <= 1) {
             String name = args.length == 1 ? args[0] : "";
             this.subCommands.forEach(x -> {
-                if (x.getName().startsWith(name)) {
+                if (x.getName().startsWith(name) && sender.hasPermission(x.getPermission())) {
                     list.add(x.getName());
                 }
             });
             if ("help".startsWith(name)) {
                 list.add("help");
             }
-            if ("reload".startsWith(name)) {
+            if ("reload".startsWith(name) && sender.hasPermission(command.getPermission().concat(".reload"))) {
                 list.add("reload");
             }
         }
@@ -101,13 +101,15 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     /**
      * This method find the subcommand to execute.
      *
-     * @param args arguments
+     * @param args   arguments
+     * @param sender The sender
      * @return the sub-command or null if there aren't a subcommand with that name
      */
-    protected ASubCommand getSubCommand(String[] args) {
+    protected ASubCommand getSubCommand(String[] args, CommandSender sender) {
         if (args != null && args.length > 0) {
             String name = args[0].toLowerCase();
-            Optional<ASubCommand> subcommand = this.subCommands.stream().filter(x -> x.getName().equals(name))
+            Optional<ASubCommand> subcommand = this.subCommands.stream()
+                    .filter(x -> x.getName().equals(name) && sender.hasPermission(x.getPermission()))
                     .findAny();
             if (subcommand.isPresent()) {
                 return subcommand.get();
