@@ -1,6 +1,5 @@
 package co.andrescol.mc.library.command;
 
-import co.andrescol.mc.library.plugin.APlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,8 +37,6 @@ public abstract class ASubCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the execution is success
      */
     public boolean handle(CommandSender sender, Command command, String label, String[] args) {
-        APlugin.getInstance().info("Check permission {} - {}",
-                this.permission, sender.hasPermission(this.getPermission()));
         if (sender.hasPermission(this.permission)) {
             if (this.goodUsage(sender, command, label, args)) {
                 return this.onCommand(sender, command, label, args);
