@@ -3,14 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.andrescol.mc.library</groupId>
-	<artifactId>AcolSpigotPluginsInitilizer</artifactId>
+	<artifactId>ASpigotPluginInitializer</artifactId>
 	<version>1.0.0</version>
-	<name>AcolSpigotPluginsInitilizer</name>
+	<name>ASpigotPluginInitializer</name>
 	<description>Library for minecraft plugins</description>
 
 	<properties>
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
