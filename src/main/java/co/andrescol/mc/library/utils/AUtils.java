@@ -17,7 +17,9 @@ public interface AUtils {
      */
     static String replaceValues(String message, Object... replacements) {
         for (Object replace : replacements) {
-            message = message.replaceFirst("\\{}", String.valueOf(replace));
+            String value = String.valueOf(replace);
+            value = value.replaceAll("\\\\", "\\\\\\\\");
+            message = message.replaceFirst("\\{}", value);
         }
         return message;
     }
