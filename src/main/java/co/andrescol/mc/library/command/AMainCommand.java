@@ -142,7 +142,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the intention is get information about de plugin
      */
     protected boolean isReloadCommand(String[] args) {
-        return args.length == 0 || args[0].equalsIgnoreCase("reload");
+        return args.length != 0 && args[0].equalsIgnoreCase("reload");
     }
 
     /**
