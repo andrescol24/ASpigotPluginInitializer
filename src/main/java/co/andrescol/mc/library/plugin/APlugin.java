@@ -1,22 +1,19 @@
 package co.andrescol.mc.library.plugin;
 
-import java.io.File;
-import java.util.logging.Level;
-
 import co.andrescol.mc.library.configuration.ALanguage;
+import co.andrescol.mc.library.utils.AUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.andrescol.mc.library.utils.AUtils;
+import java.io.File;
+import java.util.logging.Level;
 
 /**
  * This class define and implement basic methods to initialize and configure the
  * plugin. Extend this class the lang.properties file and config.yml will
- * automatically saved.
- * 
- * This class allows to access a unique instance of the plugin through {@link APlugin#getInstance()} 
- * 
- * @author andrescol24
+ * automatically save.
+ * This class allows to access a unique instance of the plugin through {@link APlugin#getInstance()}
  *
+ * @author andrescol24
  */
 public abstract class APlugin extends JavaPlugin {
 
@@ -38,12 +35,12 @@ public abstract class APlugin extends JavaPlugin {
 
 	/**
 	 * Get the plugin instance
-	 * 
+	 *
 	 * @return the plugin instance
 	 */
-	public static APlugin getInstance() {
+	public static <T extends APlugin> T getInstance() {
 		if (instance != null) {
-			return instance;
+			return (T) instance;
 		}
 		throw new IllegalStateException("Make sure that the plugin has started");
 	}
@@ -101,7 +98,6 @@ public abstract class APlugin extends JavaPlugin {
 
 		this.onDisable();
 		this.onEnable();
-		// In the moment I am using the Language direct access
 	}
 
 	/**

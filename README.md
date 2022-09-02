@@ -1,4 +1,7 @@
-# AcolSpigotPluginsInitilizer
-This proyect ficility the spigot plugins' creation simplifying:
-1. Loggin WARN, DEBUG and ERROR across the main plugin class
-2. The languaje configuration, such as reading message parameterized, replacing values and sending to console or players
+# AcolSpigotPluginsInitializer
+
+Create Minecraft Spigot plugins in an easier way.
+
+## How to use it?
+
+1. Create the plugin class and extends from APlugin

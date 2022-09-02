@@ -1,17 +1,12 @@
 package co.andrescol.mc.library.configuration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
-import org.bukkit.ChatColor;
-
 import co.andrescol.mc.library.plugin.APlugin;
 import co.andrescol.mc.library.utils.AUtils;
+import org.bukkit.ChatColor;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 /**
  * Singleton that contains the language configuration. This class going to
@@ -23,7 +18,7 @@ import co.andrescol.mc.library.utils.AUtils;
  * @author andrescol24
  */
 
-public class ALanguage {
+public final class ALanguage {
 
     private static final String LANG_FILE = "lang.properties";
     private static Properties properties = null;
@@ -53,9 +48,6 @@ public class ALanguage {
      * @return property
      */
     private static String getString(String name) {
-        if (properties == null) {
-            loadLanguageFile();
-        }
         return properties.getProperty(name);
     }
 

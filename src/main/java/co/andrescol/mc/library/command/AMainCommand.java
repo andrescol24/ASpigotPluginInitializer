@@ -1,17 +1,17 @@
 package co.andrescol.mc.library.command;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
+import co.andrescol.mc.library.configuration.ALanguage;
 import co.andrescol.mc.library.plugin.APlugin;
+import co.andrescol.mc.library.utils.AUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import co.andrescol.mc.library.configuration.ALanguage;
-import co.andrescol.mc.library.utils.AUtils;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This abstracts the main command implementation. The name and the permission
@@ -36,7 +36,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the execution is success
      */
     public boolean handle(CommandSender sender, Command command, String label, String[] args) {
-        if (sender.hasPermission(command.getPermission())) {
+        if (sender.hasPermission(Objects.requireNonNull(command.getPermission()))) {
             // info command
             if (this.isHelpCommand(args)) {
                 AUtils.sendMessage(sender, this.getInfoMessage());
@@ -68,6 +68,19 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     }
 
     /**
+     * Add a subcommand if a command with the same name has not added
+     *
+     * @param command a new command
+     */
+    protected void addSubCommand(ASubCommand command) {
+        Optional<ASubCommand> subcommand = this.subCommands.stream().filter(x -> x.getName().equals(command.getName()))
+                .findAny();
+        if (subcommand.isEmpty()) {
+            this.subCommands.add(command);
+        }
+    }
+
+    /**
      * Complete the tap for the command
      *
      * @param sender  Sender
@@ -91,7 +104,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             if ("help".startsWith(name)) {
                 list.add("help");
             }
-            if ("reload".startsWith(name) && sender.hasPermission(command.getPermission().concat(".reload"))) {
+            if ("reload".startsWith(name) && sender.hasPermission(Objects.requireNonNull(command.getPermission()).concat(".reload"))) {
                 list.add("reload");
             }
         }
@@ -105,7 +118,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @param sender The sender
      * @return the sub-command or null if there aren't a subcommand with that name
      */
-    protected ASubCommand getSubCommand(String[] args, CommandSender sender) {
+    private ASubCommand getSubCommand(String[] args, CommandSender sender) {
         if (args != null && args.length > 0) {
             String name = args[0].toLowerCase();
             Optional<ASubCommand> subcommand = this.subCommands.stream()
@@ -121,7 +134,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     /**
      * @return the information message configured in the lang.properties file
      */
-    protected String getInfoMessage() {
+    private String getInfoMessage() {
         return ALanguage.getMessage("COMMAND_INFO");
     }
 
@@ -131,7 +144,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @param args arguments
      * @return <code>true</code> if the intention is get information about de plugin
      */
-    protected boolean isHelpCommand(String[] args) {
+    private boolean isHelpCommand(String[] args) {
         return args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("info");
     }
 
@@ -141,20 +154,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @param args arguments
      * @return <code>true</code> if the intention is get information about de plugin
      */
-    protected boolean isReloadCommand(String[] args) {
+    private boolean isReloadCommand(String[] args) {
         return args.length != 0 && args[0].equalsIgnoreCase("reload");
-    }
-
-    /**
-     * Add a subcommand if a command with the same name has not added
-     *
-     * @param command a new command
-     */
-    protected void addSubCommand(ASubCommand command) {
-        Optional<ASubCommand> subcommand = this.subCommands.stream().filter(x -> x.getName().equals(command.getName()))
-                .findAny();
-        if (subcommand.isEmpty()) {
-            this.subCommands.add(command);
-        }
     }
 }
