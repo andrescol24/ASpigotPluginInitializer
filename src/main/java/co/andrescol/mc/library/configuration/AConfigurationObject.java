@@ -11,8 +11,9 @@ public abstract class AConfigurationObject {
     public void setValues() {
         FileConfiguration configuration = APlugin.getInstance().getConfig();
         for (Field field : this.getClass().getDeclaredFields()) {
-            AConfigurationKey key = field.getAnnotation(AConfigurationKey.class);
             try {
+                AConfigurationKey key = field.getAnnotation(AConfigurationKey.class);
+                if (key == null) continue;
                 if (field.getType().equals(String.class)) {
                     field.set(null, configuration.getString(key.value()));
                 } else if (field.getType().equals(Integer.class)) {
@@ -26,10 +27,10 @@ public abstract class AConfigurationObject {
                 } else if (field.getType().equals(Boolean.class)) {
                     field.set(null, configuration.getBoolean(key.value()));
                 } else {
-                    APlugin.getInstance().warn("Unsupported field type {} for {} config key", field.getType(), key.value());
+                    APlugin.getInstance().warn("Unsupported field type {} for {} config variable", field.getType(), field.getName());
                 }
-            } catch (IllegalAccessException e) {
-                APlugin.getInstance().error("Error setting the value for {}", e, key.value());
+            } catch (Exception e) {
+                APlugin.getInstance().error("Error setting the value for {}", e, field.getName());
             }
 
         }
