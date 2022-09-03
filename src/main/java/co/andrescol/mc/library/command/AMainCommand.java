@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +48,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the execution is success
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission(Objects.requireNonNull(command.getPermission()))) {
             // info command
             if (this.isHelpCommand(args)) {
@@ -78,7 +77,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> list = new LinkedList<>();
         ASubCommand subcommand = this.getSubCommand(args, sender);
         if (subcommand != null) {
