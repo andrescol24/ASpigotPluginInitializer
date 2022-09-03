@@ -45,6 +45,17 @@ public final class AMessage {
     }
 
     /**
+     * Get a complete message replacing the parameters
+     *
+     * @param name         the name of the language field
+     * @param replacements arguments
+     * @return Message
+     */
+    public static String getMessage(Enum<?> name, Object... replacements) {
+        return getMessage(name.name(), replacements);
+    }
+
+    /**
      * Sends a message
      *
      * @param destination the receiver
