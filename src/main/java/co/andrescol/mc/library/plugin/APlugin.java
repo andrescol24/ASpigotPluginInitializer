@@ -1,6 +1,7 @@
 package co.andrescol.mc.library.plugin;
 
-import co.andrescol.mc.library.configuration.ALanguage;
+import co.andrescol.mc.library.configuration.AConfigurationObject;
+import co.andrescol.mc.library.configuration.AMessage;
 import co.andrescol.mc.library.utils.AUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,37 +16,9 @@ import java.util.logging.Level;
  *
  * @author andrescol24
  */
-public abstract class APlugin extends JavaPlugin {
+public abstract class APlugin<C extends AConfigurationObject> extends JavaPlugin {
 
-	// ========================== Statics ================================
-	private static APlugin instance;
-
-	/**
-	 * Set the static and the unique instance (could exists more instances)
-	 * 
-	 * @param plugin First instance created
-	 */
-	private static void setInstance(APlugin plugin) {
-		if (instance == null) {
-			instance = plugin;
-		} else {
-			instance.warn("A new instance of this plugin was created, check externals effects!");
-		}
-	}
-
-	/**
-	 * Get the plugin instance
-	 *
-	 * @return the plugin instance
-	 */
-	public static <T extends APlugin> T getInstance() {
-		if (instance != null) {
-			return (T) instance;
-		}
-		throw new IllegalStateException("Make sure that the plugin has started");
-	}
-
-	// ========================== End Statics ================================
+	protected C configurationObject;
 
 	/**
 	 * Constructor that initializes the unique instance, save the config.yml and
@@ -53,12 +26,25 @@ public abstract class APlugin extends JavaPlugin {
 	 */
 	protected APlugin() {
 		APlugin.setInstance(this);
-		this.loadConfiguration();
+		getConfig().options().copyDefaults(true);
+		File config = new File(getDataFolder(), "config.yml");
+		if (!config.exists()) {
+			saveDefaultConfig();
+		}
+		this.initializeCustomConfiguration();
+		AMessage.loadLanguageFile();
+		this.configurationObject.setValues();
 	}
 
 	/**
+	 * Should set the instances of {@link APlugin#configurationObject}
+	 * just like this ex: this.configuration = new CustomConfiguration();
+	 */
+	protected abstract void initializeCustomConfiguration();
+
+	/**
 	 * Write a console message
-	 * 
+	 *
 	 * @param message the message
 	 */
 	public void info(String message, Object... replacements) {
@@ -94,21 +80,52 @@ public abstract class APlugin extends JavaPlugin {
 	 */
 	public void reload() {
 		this.reloadConfig();
-		ALanguage.loadLanguageFile();
+		AMessage.loadLanguageFile();
+		this.configurationObject.setValues();
 
 		this.onDisable();
 		this.onEnable();
 	}
 
+	// ========================== Statics ================================
+	private static APlugin<?> instance;
+
 	/**
-	 * Load and save the configuration files
+	 * Set the static and the unique instance (could exists more instances)
+	 *
+	 * @param plugin First instance created
 	 */
-	private void loadConfiguration() {
-		getConfig().options().copyDefaults(true);
-		File config = new File(getDataFolder(), "config.yml");
-		if (!config.exists()) {
-			saveDefaultConfig();
+	private static <C extends AConfigurationObject> void setInstance(APlugin<C> plugin) {
+		if (instance == null) {
+			instance = plugin;
+		} else {
+			instance.warn("A new instance of this plugin was created, check externals effects!");
 		}
-		ALanguage.loadLanguageFile();
 	}
+
+	/**
+	 * Get the plugin instance
+	 *
+	 * @return the plugin instance
+	 */
+	public static <T extends APlugin<?>> T getInstance() {
+		if (instance != null) {
+			return (T) instance;
+		}
+		throw new IllegalStateException("Make sure that the plugin has started");
+	}
+
+	/**
+	 * Get the plugin instance
+	 *
+	 * @return the plugin instance
+	 */
+	public static <C extends AConfigurationObject> C getConfigurationObject() {
+		if (instance != null) {
+			return (C) instance.configurationObject;
+		}
+		throw new IllegalStateException("Make sure that the plugin has started");
+	}
+
+	// ========================== End Statics ================================
 }

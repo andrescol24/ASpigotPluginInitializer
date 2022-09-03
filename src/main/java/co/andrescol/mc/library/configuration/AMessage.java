@@ -3,6 +3,9 @@ package co.andrescol.mc.library.configuration;
 import co.andrescol.mc.library.plugin.APlugin;
 import co.andrescol.mc.library.utils.AUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +21,7 @@ import java.util.Properties;
  * @author andrescol24
  */
 
-public final class ALanguage {
+public final class AMessage {
 
     private static final String LANG_FILE = "lang.properties";
     private static Properties properties = null;
@@ -31,7 +34,7 @@ public final class ALanguage {
      * @return Message
      */
     public static String getMessage(String name, Object... replacements) {
-        String message = getString(name);
+        String message = properties.getProperty(name);
         if (message != null) {
             message = AUtils.replaceValues(message, replacements);
             message = ChatColor.translateAlternateColorCodes('&', message);
@@ -42,20 +45,37 @@ public final class ALanguage {
     }
 
     /**
-     * Get the language property reading the file lang.properties
+     * Sends a message
      *
-     * @param name name of the language field in the language file
-     * @return property
+     * @param destination the receiver
+     * @param name        property name
      */
-    private static String getString(String name) {
-        return properties.getProperty(name);
+    public static void sendMessage(CommandSender destination, String name, Object... replacements) {
+        String message = getMessage(name, replacements);
+        if (destination instanceof Player) {
+            destination.sendMessage(message);
+        } else {
+            ConsoleCommandSender sender = APlugin.getInstance().getServer().getConsoleSender();
+            sender.sendMessage(message);
+        }
     }
+
+    /**
+     * Sends a message
+     *
+     * @param destination the receiver
+     * @param name        property name
+     */
+    public static void sendMessage(CommandSender destination, Enum<?> name, Object... replacements) {
+        sendMessage(destination, name.name(), replacements);
+    }
+
 
     /**
      * Load the language file
      */
     public static void loadLanguageFile() {
-        APlugin plugin = APlugin.getInstance();
+        APlugin<?> plugin = APlugin.getInstance();
         File lang = new File(plugin.getDataFolder(), LANG_FILE);
         if (!lang.exists()) {
             plugin.saveResource(LANG_FILE, false);

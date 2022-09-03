@@ -1,12 +1,10 @@
 package co.andrescol.mc.library.command;
 
+import co.andrescol.mc.library.configuration.AMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-
-import co.andrescol.mc.library.configuration.ALanguage;
-import co.andrescol.mc.library.utils.AUtils;
 
 /**
  * Spigot does not support subcommand so we need to validate manually the sub
@@ -41,11 +39,9 @@ public abstract class ASubCommand implements TabCompleter, CommandExecutor {
             if (this.goodUsage(sender, command, label, args)) {
                 return this.onCommand(sender, command, label, args);
             }
-            String message = ALanguage.getMessage("INCORRECT_USAGE_" + this.name.toUpperCase());
-            AUtils.sendMessage(sender, message);
+            AMessage.sendMessage(sender, "INCORRECT_USAGE_" + this.name.toUpperCase());
         } else {
-            String message = ALanguage.getMessage("NOT_PERMISSION");
-            AUtils.sendMessage(sender, message);
+            AMessage.sendMessage(sender, "NOT_PERMISSION");
         }
         return true;
     }

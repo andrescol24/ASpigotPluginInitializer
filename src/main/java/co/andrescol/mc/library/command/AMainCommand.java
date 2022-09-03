@@ -1,12 +1,12 @@
 package co.andrescol.mc.library.command;
 
-import co.andrescol.mc.library.configuration.ALanguage;
+import co.andrescol.mc.library.configuration.AMessage;
 import co.andrescol.mc.library.plugin.APlugin;
-import co.andrescol.mc.library.utils.AUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,49 +25,6 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     private final List<ASubCommand> subCommands = new LinkedList<>();
 
     /**
-     * This method executes all command logic, it includes: permission and usage
-     * verification. You have to configure the main command with its permission in
-     * the plugin.yml file
-     *
-     * @param sender  The command sender
-     * @param command the command information
-     * @param label   Label
-     * @param args    The command's arguments
-     * @return <code>true</code> if the execution is success
-     */
-    public boolean handle(CommandSender sender, Command command, String label, String[] args) {
-        if (sender.hasPermission(Objects.requireNonNull(command.getPermission()))) {
-            // info command
-            if (this.isHelpCommand(args)) {
-                AUtils.sendMessage(sender, this.getInfoMessage());
-            } else if (this.isReloadCommand(args)) {
-                if (sender.hasPermission(command.getPermission().concat(".reload"))) {
-                    APlugin.getInstance().reload();
-                    String message = ALanguage.getMessage("CONFIGURATION_RELOAD");
-                    AUtils.sendMessage(sender, message);
-                } else {
-                    String message = ALanguage.getMessage("NOT_PERMISSION");
-                    AUtils.sendMessage(sender, message);
-                }
-            } else {
-                // Sub command execution
-                ASubCommand subcommand = this.getSubCommand(args, sender);
-                if (subcommand != null) {
-                    return subcommand.handle(sender, command, label, args);
-                } else {
-                    // Unknown subcommand
-                    String message = ALanguage.getMessage("UNKNOWN_SUBCOMMAND", args[0]);
-                    AUtils.sendMessage(sender, message);
-                }
-            }
-        } else {
-            String message = ALanguage.getMessage("NOT_PERMISSION");
-            AUtils.sendMessage(sender, message);
-        }
-        return true;
-    }
-
-    /**
      * Add a subcommand if a command with the same name has not added
      *
      * @param command a new command
@@ -81,15 +38,47 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
     }
 
     /**
-     * Complete the tap for the command
+     * This method executes all command logic, it includes: permission and usage
+     * verification. You have to configure the main command with its permission in
+     * the plugin.yml file
      *
-     * @param sender  Sender
-     * @param command command
+     * @param sender  The command sender
+     * @param command the command information
      * @param label   Label
-     * @param args    arguments
-     * @return list of options
+     * @param args    The command's arguments
+     * @return <code>true</code> if the execution is success
      */
-    protected List<String> completeTab(CommandSender sender, Command command, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, @NotNull String label, String[] args) {
+        if (sender.hasPermission(Objects.requireNonNull(command.getPermission()))) {
+            // info command
+            if (this.isHelpCommand(args)) {
+                AMessage.sendMessage(sender, "COMMAND_INFO");
+            } else if (this.isReloadCommand(args)) {
+                if (sender.hasPermission(command.getPermission().concat(".reload"))) {
+                    APlugin.getInstance().reload();
+                    AMessage.sendMessage(sender, "CONFIGURATION_RELOAD");
+                } else {
+                    AMessage.sendMessage(sender, "NOT_PERMISSION");
+                }
+            } else {
+                // Sub command execution
+                ASubCommand subcommand = this.getSubCommand(args, sender);
+                if (subcommand != null) {
+                    return subcommand.handle(sender, command, label, args);
+                } else {
+                    // Unknown subcommand
+                    AMessage.sendMessage(sender, "UNKNOWN_SUBCOMMAND", args[0]);
+                }
+            }
+        } else {
+            AMessage.sendMessage(sender, "NOT_PERMISSION");
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         List<String> list = new LinkedList<>();
         ASubCommand subcommand = this.getSubCommand(args, sender);
         if (subcommand != null) {
@@ -129,13 +118,6 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             }
         }
         return null;
-    }
-
-    /**
-     * @return the information message configured in the lang.properties file
-     */
-    private String getInfoMessage() {
-        return ALanguage.getMessage("COMMAND_INFO");
     }
 
     /**
