@@ -7,9 +7,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-public abstract class AConfigurationObject {
+public interface AConfigurationObject {
 
-    public void setValues() {
+    default void setValues() {
         FileConfiguration configuration = APlugin.getInstance().getConfig();
         for (Field field : this.getClass().getDeclaredFields()) {
             try {

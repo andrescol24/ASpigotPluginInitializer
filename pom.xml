@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.andrescol.mc.library</groupId>
 	<artifactId>ASpigotPluginInitializer</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>ASpigotPluginInitializer</name>
 	<description>Library for minecraft plugins</description>
 
