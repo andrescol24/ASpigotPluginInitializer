@@ -92,7 +92,7 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
             return subcommand.onTabComplete(sender, command, label, args);
         } else if (args.length <= 1) {
             String name = args.length == 1 ? args[0] : "";
-            list = new java.util.ArrayList<>(this.subCommands.stream()
+            list.addAll(this.subCommands.stream()
                     .filter(x -> x.getName().startsWith(name) && sender.hasPermission(x.getPermission()))
                     .map(ASubCommand::getName).toList());
             if ("help".startsWith(name)) {
