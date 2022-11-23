@@ -136,7 +136,8 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the intention is get information about de plugin
      */
     private boolean isHelpCommand(String[] args) {
-        return args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("info");
+        return this.defaultCommand == null || args.length == 0 ||
+                args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("info");
     }
 
     /**
