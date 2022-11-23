@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * This abstracts the main command implementation. The name and the permission
  * of this command. If your command extends this class automatically will have
- * the info/help command.
+ * the help command.
  * <br/><br/>
  * To add a new command use the {@link AMainCommand#addSubCommand(ASubCommand)}
  * <br/><br/>
@@ -136,8 +136,10 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      * @return <code>true</code> if the intention is get information about de plugin
      */
     private boolean isHelpCommand(String[] args) {
-        return this.defaultCommand == null && args.length == 0 ||
-                args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("info");
+        if (this.defaultCommand != null)
+            return args.length > 0 && args[0].equalsIgnoreCase("help");
+        else
+            return args.length == 0 || args[0].equalsIgnoreCase("help");
     }
 
     /**
