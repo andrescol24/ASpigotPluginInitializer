@@ -27,7 +27,7 @@ import java.util.Optional;
 public abstract class AMainCommand implements TabCompleter, CommandExecutor {
 
     private final List<ASubCommand> subCommands = new LinkedList<>();
-    protected ASubCommand defaultCommand;
+    private ASubCommand defaultCommand;
 
     /**
      * Add a subcommand if a command with the same name has not added
@@ -150,5 +150,9 @@ public abstract class AMainCommand implements TabCompleter, CommandExecutor {
      */
     private boolean isReloadCommand(String[] args) {
         return args.length != 0 && args[0].equalsIgnoreCase("reload");
+    }
+
+    public void setDefaultCommand(ASubCommand defaultCommand) {
+        this.defaultCommand = defaultCommand;
     }
 }
